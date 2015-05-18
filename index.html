@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>The return of Hershey demo</title>
+    <meta charset="UTF-8">
+    
+    <style type="text/css">
+      body {
+        font-family: sans-serif;
+      }
+      
+      .hershey-1{
+            font-size:36px;
+            line-height:1.1em;
+            width:80%;
+            float:left;
+            text-align:center;
+      }
+      
+      .hershey-2{
+            font-size:32px;
+            line-height:1em;
+            width:300px;
+            float:left;
+            text-align:center;
+      }
+      .hershey-3{
+            font-size:18px;
+            line-height:1.2em;
+            
+            float:left;
+            
+      }
+      
+    </style>
+    
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+    <script src="hersheyreturns.js"></script>
+    <script>
+    $(function(){
+        $.getJSON('hersheytext.json', function(fonts){
+            
+            $('.hershey-1').each(function(){
+                new HersheyReturns({
+                    font: fonts['futuram'],
+                    elem:$(this),
+                    scaleHeight:3,
+                    autoResize:true
+                });
+            });
+            $('.hershey-2').each(function(){
+                new HersheyReturns({
+                    font: fonts['symbolic'],
+                    elem:$(this),
+                    scaleHeight:8,
+                    scaleWidth:8
+                });
+            });
+            $('.hershey-3').each(function(){
+                new HersheyReturns({
+                    font: fonts['cursive'],
+                    elem:$(this),
+                    autoResize:true
+                });
+            });
+           
+            
+            
+        
+        });
+
+    });
+
+    </script>
+    
+  </head>
+  <body>
+    <div class="hershey-1">
+        Hello Mr Hershey! This is a multiline responsive centered text with vertical scale at 300%
+        and fixed 1 pixel stroke.
+    </div>
+    
+    <div class="hershey-2">
+        b
+    </div>
+    <div class="hershey-3">
+        HersheyReturns uses the Hershey fonts dataset to display text with svg characters.
+        The process is similar to https://github.com/techninja/hersheytextjs but is focused on
+        applying hershey fonts to existing html elements.
+        Main features are : uses color, font-size, line-height, letter-spacing, text-align 
+        css standard attributes ; independent scale width and scale height with no stroke deformation ; 
+        adapts on window resize.
+    </div>
+    
+    
+  </body>
+</html>
