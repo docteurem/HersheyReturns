@@ -1,5 +1,10 @@
-
-
+/**
+ * HersheyReturns v0.1.1
+ * by Lionel Maes - http://lavillahermosa.com/
+ *
+ * @license GNU GPL v3 or (at your option) any later version. 
+ * http://www.gnu.org/licenses/gpl.html
+ */
 
 
 var HersheyReturns = (function(){
@@ -56,7 +61,7 @@ var HersheyReturns = (function(){
         return parseFloat(this.elem.css('font-size')) / 24;
     };
     
-    //set linespacing based on line-height  of elem and scaleHeight
+    //set linespacing based on line-height of elem and scaleHeight
     HersheyReturns.prototype.setLineSpacing = function(){
         return (parseFloat(this.elem.css('line-height')) - parseFloat(this.elem.css('font-size'))) * this.scaleHeight;
         
@@ -84,7 +89,7 @@ var HersheyReturns = (function(){
     };
     
     HersheyReturns.prototype.renderWord = function(word){
-        var self = this;
+        
         var charOffset = 0;
         var wordHeight = 0;
         var $word = $('<g>');
@@ -92,13 +97,13 @@ var HersheyReturns = (function(){
         for(var i in word) {
             var index = word.charCodeAt(i) - 33;
             
-            if (!self.font[index]) continue;
+            if (!this.font[index]) continue;
             
-            var path = Raphael.transformPath(self.font[index].d, 's'+self.scaleWidth+','+self.scaleHeight+',0,0');
+            var path = Raphael.transformPath(this.font[index].d, 's'+this.scaleWidth+','+this.scaleHeight+',0,0');
             var charPath = $('<path>');
             charPath.attr({
                 d: path,
-                style: 'stroke:'+self.color+'; stroke-width:1; fill:none;',
+                style: 'stroke:'+this.color+'; stroke-width:1; fill:none;',
                 fill: 'none',
                 transform: 'translate(' + charOffset + ', 0)'
             });
@@ -107,7 +112,7 @@ var HersheyReturns = (function(){
             
             charWidth = charBBox.width + charBBox.x;
             wordHeight = (charBBox.height + charBBox.y > wordHeight)?charBBox.height + charBBox.y:wordHeight;
-            charOffset += charWidth + self.letterSpacing;
+            charOffset += charWidth + this.letterSpacing;
            
         }
        
@@ -116,84 +121,86 @@ var HersheyReturns = (function(){
     };
     
     HersheyReturns.prototype.renderLine = function(){
-        var self = this;
+        
         var wordOffset = 0;
         var lineHeight = 0;
         var $line =  $('<g>').attr({
-            style: 'stroke:'+self.color+'; fill:none;',
+            style: 'stroke:'+this.color+'; fill:none;',
         });
         
-        while(self.wordCount < self.words.length){
-            var word = self.words[self.wordCount];
-            var gWord = self.renderWord(word);
+        while(this.wordCount < this.words.length){
+            var word = this.words[this.wordCount];
+            var gWord = this.renderWord(word);
             
             gWord.$word.attr({transform: 'translate(' + wordOffset + ', 0)'});
             
-            if(wordOffset + gWord.width > self.width){
-                if(gWord.width > self.width){
+            if(wordOffset + gWord.width > this.width){
+                if(gWord.width > this.width){
+                    //if the word doesn't fit into the line, we stop. TODO: word break or width enlargement!
                     console.log('elem width too big');
                     return;
                 }
-                self.lines[self.lineCount] = {'$line':$line,'width':wordOffset, 'height':lineHeight};
-                self.lineCount++;
-                self.renderLine();
+                this.lines[this.lineCount] = {'$line':$line,'width':wordOffset, 'height':lineHeight};
+                this.lineCount++;
+                this.renderLine();
                 return;
                 
             }
             lineHeight = (gWord.height > lineHeight)?gWord.height:lineHeight;
             $line.append(gWord.$word);
             
-            wordOffset += gWord.width + self.whiteSpace;
-            self.wordCount++;
+            wordOffset += gWord.width + this.whiteSpace;
+            this.wordCount++;
             
             
         }
         
-        self.lines[self.lineCount] = {'$line':$line,'width':wordOffset, 'height':lineHeight};
-        self.lineCount++;
+        this.lines[this.lineCount] = {'$line':$line,'width':wordOffset, 'height':lineHeight};
+        this.lineCount++;
         
     }
     
     HersheyReturns.prototype.render = function(){
-        self = this;
-        // Create central group
+        
+        //Create main group
         var $group = $('<g>').attr({
-        style: 'stroke:'+self.color+'; fill:none;',
-        transform: 'translate('+self.pos.x+', '+self.pos.y+')'
+            style: 'stroke:'+this.color+'; fill:none;',
+            transform: 'translate('+this.pos.x+', '+this.pos.y+')'
         });
        
        
         var lineOffset = {'left':0, 'top':0};
-        self.words = self.text.split(' ');
+        this.words = this.text.split(' ');
         
+        this.lineCount = 0;
+        this.wordCount = 0;
+        this.lines = [];
         
-        self.lineCount = 0;
-        self.wordCount = 0;
-        self.lines = [];
+        //First we build the text lines
+        this.renderLine();
         
-        self.renderLine();
-        
-         for(var i = 0; i <  self.lineCount; i++){
-            if(self.centerWidth){
-                var lineWidth = self.lines[i].width;
-                lineOffset.left = (self.width - lineWidth) / 2;
+        //Then we place them inside the main group
+         for(var i = 0; i <  this.lineCount; i++){
+            if(this.centerWidth){
+                var lineWidth = this.lines[i].width;
+                lineOffset.left = (this.width - lineWidth) / 2;
             }
-            self.lines[i].$line.attr({transform: 'translate('+lineOffset.left+', '+lineOffset.top+')'});
-            $group.append(self.lines[i].$line);
+            this.lines[i].$line.attr({transform: 'translate('+lineOffset.left+', '+lineOffset.top+')'});
+            $group.append(this.lines[i].$line);
            
-            if(i == self.lineCount - 1)
-                lineOffset.top += self.lines[i].height;
+            if(i == this.lineCount - 1)
+                lineOffset.top += this.lines[i].height;
             else
-                lineOffset.top += self.charHeight + self.lineSpacing;
+                lineOffset.top += this.charHeight + this.lineSpacing;
            
         }
         
-        self.target.attr({'height':lineOffset.top});
-        self.target.append($group);
+        this.target.attr({'height':lineOffset.top});
+        this.target.append($group);
         
         
-        self.elem.append(this.target);
-        self.elem.html(this.elem.html());
+        this.elem.append(this.target);
+        this.elem.html(this.elem.html());
         
         
         
@@ -217,7 +224,8 @@ var HersheyReturns = (function(){
         this.update();
     };
     
-    //set letter spacing based on letter-spacing and scale of elem
+    
+    //remove accents utility
     HersheyReturns.prototype.utilsNormAccents = function(str){
         var accent = [
         /[\300-\306]/g, /[\340-\346]/g, // A, a
