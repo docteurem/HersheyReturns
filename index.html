@@ -23,6 +23,7 @@
             width:300px;
             float:left;
             text-align:center;
+            color:#FFFF00;
       }
       .hershey-3{
             font-size:18px;
@@ -54,14 +55,17 @@
                     font: fonts['symbolic'],
                     elem:$(this),
                     scaleHeight:8,
-                    scaleWidth:8
+                    scaleWidth:8,
+                    strokeWidth:20
+                    
                 });
             });
             $('.hershey-3').each(function(){
                 new HersheyReturns({
                     font: fonts['cursive'],
                     elem:$(this),
-                    autoResize:true
+                    autoResize:true,
+                    fill:'#00FF00'
                 });
             });
            

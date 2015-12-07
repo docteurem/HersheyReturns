@@ -14,7 +14,10 @@ var HersheyReturns = (function(){
         this.elem = $(options.elem);
         this.font = options.font.chars;
         
-        this.color = options.color ? options.color : '#000000';
+        this.color = options.color ? options.color : this.setColor();
+        this.fill = options.fill ? options.fill : 'none';
+        this.strokeWidth = options.strokeWidth ? options.strokeWidth : 1;
+        
         this.pos = options.pos ? options.pos : {x:0, y:0}
         
         this.baseScale = this.setScale();
@@ -28,6 +31,8 @@ var HersheyReturns = (function(){
         this.letterSpacing = options.letterSpacing ? options.letterSpacing:this.setLetterSpacing();
         this.whiteSpace = options.whiteSpace ? options.whiteSpace:this.setWhiteSpace();
         this.charHeight = options.charHeight ? options.charHeight:this.setCharHeight();
+        
+        
         
         if(options.autoResize){
             
@@ -88,6 +93,10 @@ var HersheyReturns = (function(){
         
     };
     
+    HersheyReturns.prototype.setColor = function(){
+            return this.elem.css('color')
+    }
+    
     HersheyReturns.prototype.renderWord = function(word){
         
         var charOffset = 0;
@@ -103,8 +112,8 @@ var HersheyReturns = (function(){
             var charPath = $('<path>');
             charPath.attr({
                 d: path,
-                style: 'stroke:'+this.color+'; stroke-width:1; fill:none;',
-                fill: 'none',
+                style: 'stroke:'+this.color+'; stroke-width:'+this.strokeWidth+'; fill:'+this.fill+';',
+                
                 transform: 'translate(' + charOffset + ', 0)'
             });
             $word.append(charPath);
